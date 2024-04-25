@@ -4,7 +4,7 @@
 #include "gd32vf103.h"
 
 
-#define UARTLOGEN         0
+#define UARTLOGEN         1
 #define UARTLOG_PORT      USART0
 
 #endif /* APP_CONFIG_H */

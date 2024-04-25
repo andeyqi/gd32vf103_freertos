@@ -43,6 +43,11 @@ SECTIONS
     *(.text.startup .text.startup.*)
     *(.text .text.*)
     *(.gnu.linkonce.t.*)
+    . = ALIGN(4);
+    /* section information for finsh shell */
+    __fsymtab_start = .;
+    KEEP(*(FSymTab))
+    __fsymtab_end = .;
   } >flash AT>flash 
 
   .fini           :
