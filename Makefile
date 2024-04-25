@@ -19,15 +19,15 @@ DEBUG = 1
 OPT = -Og
 
 
-PROJECTBASE = $(PWD)
+#PROJECTBASE = $(PWD)
 override PROJECTBASE    := $(abspath $(PROJECTBASE))
-TOP_DIR = $(PROJECTBASE)
+TOP_DIR := .
 
 
 #######################################
 # binaries
 #######################################
-PREFIX    = /opt/gcc-riscv64-unknown-elf/bin/riscv64-unknown-elf-
+PREFIX    = riscv-none-embed-
 CC        = $(PREFIX)gcc
 AS        = $(PREFIX)gcc -x assembler-with-cpp
 OBJCOPY   = $(PREFIX)objcopy
@@ -37,8 +37,8 @@ SZ        = $(PREFIX)size
 LD        = $(PREFIX)ld
 HEX       = $(OBJCOPY) -O ihex
 BIN       = $(OBJCOPY) -O binary -S
-#GDB       = $(PREFIX)gdb
-GDB       = /opt/riscv-none-eabi-insight/bin/riscv-none-eabi-insight #使用insight代替gdb来调试
+GDB       = $(PREFIX)gdb
+#GDB       = /opt/riscv-none-eabi-insight/bin/riscv-none-eabi-insight #使用insight代替gdb来调试
 
 #######################################
 # paths
@@ -152,8 +152,8 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)"
 # LDFLAGS
 #######################################
 # link script
-LD_FILE = GD32VF103_Firmware_Library/RISCV/env_Eclipse/GD32VF103xB.lds
-LDSCRIPT = $(PROJECTBASE)/$(LD_FILE)
+#LD_FILE = $(TOP_DIR)/GD32VF103_Firmware_Library/RISCV/env_Eclipse/GD32VF103xB.lds
+LDSCRIPT = $(TOP_DIR)/GD32VF103_Firmware_Library/RISCV/env_Eclipse/GD32VF103xB.lds
 
 # libraries
 LIBS = -lm 
