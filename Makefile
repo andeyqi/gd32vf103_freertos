@@ -180,6 +180,7 @@ vpath %.S $(sort $(dir $(ASM_SOURCES)))
 
 $(OBJ_DIR)/%.o: %.c Makefile | $(OBJ_DIR)
 	@echo CC $(notdir $@)
+	@$(CC) -E $(CFLAGS) -Wa,-a,-ad,-alms=$(OBJ_DIR)/$(notdir $(<:.c=.lst)) $< -o $@.i
 	@$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(OBJ_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 
 $(OBJ_DIR)/%.o: %.S Makefile | $(OBJ_DIR)
