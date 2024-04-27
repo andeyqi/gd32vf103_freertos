@@ -114,8 +114,10 @@ static const unsigned char stringlongannao[0x187] = {
 
 void show_version(void)
 {
+    printf("\n");
     printf("%s",stringlongannao);
     printf("%s %s\n",__DATE__,__TIME__);
+    printf("\n");
 }
 
 int main(void)
