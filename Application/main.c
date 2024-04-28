@@ -58,6 +58,10 @@ void task1(void *p)
     {
         gpio_bit_write(GPIOA, GPIO_PIN_1, (bit_status)(1-gpio_input_bit_get(GPIOA, GPIO_PIN_1)));
         vTaskDelay(pdMS_TO_TICKS(500));
+        gpio_bit_write(GPIOA, GPIO_PIN_2, (bit_status)(1-gpio_input_bit_get(GPIOA, GPIO_PIN_2)));
+        vTaskDelay(pdMS_TO_TICKS(500));
+        gpio_bit_write(GPIOC, GPIO_PIN_13, (bit_status)(1-gpio_input_bit_get(GPIOC, GPIO_PIN_13)));
+        vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
 
@@ -106,10 +110,17 @@ int main(void)
     uart_log_init();
     #endif
     show_version();
-    /* 初始化led PA7 */
+    /* 初始化led PA1/PA2/PC13 */
     rcu_periph_clock_enable(RCU_GPIOA);
     gpio_init(GPIOA, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_1);
     gpio_bit_reset(GPIOA, GPIO_PIN_1);
+    gpio_init(GPIOA, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_2);
+    gpio_bit_reset(GPIOA, GPIO_PIN_2);
+    rcu_periph_clock_enable(RCU_GPIOC);
+    gpio_init(GPIOC, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_13);
+    gpio_bit_reset(GPIOC, GPIO_PIN_13);
+
+    /*  */
 
     xTaskCreate(task1,"task1",521,NULL,2,NULL);
     xTaskCreate(littleshell_main_entry,"task2",521,NULL,2,NULL);
