@@ -52,8 +52,29 @@ void uart_log_init(void)
 }
 
 
+static inline void atomic_add(int i, unsigned int *p)
+{
+	unsigned int tmp;
+	int result;
+
+	asm volatile("# atomic_add\n"
+    "1:	lr.w	%[tmp], (%[p])\n"
+    "	add	%[tmp], %[i], %[tmp]\n"
+    "	sc.w	%[result], %[tmp], (%[p])\n"
+    "	bnez	%[result], 1b\n"
+	: [result]"=&r" (result), [tmp]"=&r" (tmp), [p]"+r" (p)
+	: [i]"r" (i)
+	: "memory");
+}
+
 void task1(void *p)
 {
+	unsigned int p1 = 0;
+
+	atomic_add(5, &p1);
+
+	printf("atomic add: %d\n", p1);
+
     for(;;)
     {
         gpio_bit_write(GPIOA, GPIO_PIN_1, (bit_status)(1-gpio_input_bit_get(GPIOA, GPIO_PIN_1)));
