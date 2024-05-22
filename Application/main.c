@@ -17,6 +17,7 @@
 #include "app_config.h"
 #include "ringbuffer.h"
 #include "littleshell.h"
+#include "atomic.h"
 
 
 RingBuffer uart_rx;
@@ -52,28 +53,19 @@ void uart_log_init(void)
 }
 
 
-static inline void atomic_add(int i, unsigned int *p)
-{
-	unsigned int tmp;
-	int result;
 
-	asm volatile("# atomic_add\n"
-    "1:	lr.w	%[tmp], (%[p])\n"
-    "	add	%[tmp], %[i], %[tmp]\n"
-    "	sc.w	%[result], %[tmp], (%[p])\n"
-    "	bnez	%[result], 1b\n"
-	: [result]"=&r" (result), [tmp]"=&r" (tmp), [p]"+r" (p)
-	: [i]"r" (i)
-	: "memory");
-}
+int p1 = 0;
 
 void task1(void *p)
 {
-	unsigned int p1 = 0;
+	int i = 0;
+	for(i = 0;i < 6000000;i++)
+	{
+		atomic_add(1, (unsigned int *)&p1);
+		//p1++;
+	}
 
-	atomic_add(5, &p1);
-
-	printf("atomic add: %d\n", p1);
+	printf("\n task1 atomic add: %d \n", p1);
 
     for(;;)
     {
@@ -89,14 +81,29 @@ void task1(void *p)
 
 void task2(void *p)
 {
-    char *taskStatus = (char *)pvPortMalloc( uxTaskGetNumberOfTasks() * sizeof( TaskStatus_t ) );
+
+	int i = 0;
+	for(i = 0;i < 6000000;i++)
+	{
+		atomic_add(-1, (unsigned int *)&p1);
+		//p1--;
+	}
+
+	printf("\n task2 atomic add: %d \n", p1);
+
     for(;;)
     {
-        vTaskList(taskStatus);
-        printf("\nTaskName\tStatus\tPRI\tStack\tTaskNumber\n%s",taskStatus);
-        printf("current tick is %ld\n",xTaskGetTickCount());
         vTaskDelay(pdMS_TO_TICKS(5000));
     }
+
+    //char *taskStatus = (char *)pvPortMalloc( uxTaskGetNumberOfTasks() * sizeof( TaskStatus_t ) );
+    //for(;;)
+    //{
+    //    vTaskList(taskStatus);
+    //    printf("\nTaskName\tStatus\tPRI\tStack\tTaskNumber\n%s",taskStatus);
+    //    printf("current tick is %ld\n",xTaskGetTickCount());
+    //    vTaskDelay(pdMS_TO_TICKS(5000));
+    //}
 }
 
 void show_version(void)
@@ -144,7 +151,8 @@ int main(void)
     /*  */
 
     xTaskCreate(task1,"task1",521,NULL,2,NULL);
-    xTaskCreate(littleshell_main_entry,"task2",521,NULL,2,NULL);
+    xTaskCreate(task2,"task2",521,NULL,2,NULL);
+    xTaskCreate(littleshell_main_entry,"shell",521,NULL,2,NULL);
 
     vTaskStartScheduler();
 }
