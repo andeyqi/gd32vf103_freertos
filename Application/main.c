@@ -18,7 +18,7 @@
 #include "ringbuffer.h"
 #include "littleshell.h"
 #include "atomic.h"
-
+#include "log.h"
 
 RingBuffer uart_rx;
 
@@ -64,8 +64,9 @@ void task1(void *p)
 		atomic_add(1, (unsigned int *)&p1);
 		//p1++;
 	}
-
-	printf("\n task1 atomic add: %d \n", p1);
+	eclic_global_interrupt_disable();
+	printf("task1 atomic add: %d \n", p1);
+	eclic_global_interrupt_enable();
 
     for(;;)
     {
@@ -89,7 +90,9 @@ void task2(void *p)
 		//p1--;
 	}
 
-	printf("\n task2 atomic add: %d \n", p1);
+	eclic_global_interrupt_disable();
+	printf("task2 atomic add: %d \n", p1);
+	eclic_global_interrupt_enable();
 
     for(;;)
     {
@@ -117,8 +120,9 @@ void show_version(void)
         "                  /____/                                         \n";
 
     printf("\n");
-    printf("%s",ascii_art);
-    printf("%s %s\n",__DATE__,__TIME__);
+    PRINT_COLOR_FMT(GREEN,"%s",(char *)ascii_art);
+    printf("\n");
+    PRINT_COLOR_FMT(GREEN,"%s %s\n",__DATE__,__TIME__);
     printf("\n");
 
 }
