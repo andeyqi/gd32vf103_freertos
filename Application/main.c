@@ -61,7 +61,7 @@ void task1(void *p)
 	int i = 0;
 	for(i = 0;i < 6000000;i++)
 	{
-		atomic_add(1, (unsigned int *)&p1);
+		atomic_add1(1, (unsigned int *)&p1);
 		//p1++;
 	}
 	eclic_global_interrupt_disable();
@@ -86,7 +86,7 @@ void task2(void *p)
 	int i = 0;
 	for(i = 0;i < 6000000;i++)
 	{
-		atomic_add(-1, (unsigned int *)&p1);
+		atomic_add1(-1, (unsigned int *)&p1);
 		//p1--;
 	}
 

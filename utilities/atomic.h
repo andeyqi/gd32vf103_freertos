@@ -16,5 +16,15 @@ static inline void atomic_add(int i, unsigned int *p)
     : "memory");
 }
 
+static inline void atomic_add1(int i, unsigned int *p)
+{
+	unsigned int result;
+
+	asm volatile("# atomic_add\n"
+"	amoadd.w %[result], %[i], (%[p])\n"
+	: [result]"=&r"(result) , [p]"+r" (p)
+	: [i]"r" (i)
+	: "memory");
+}
 
 #endif /* end of __ATOMIC_H__ */
