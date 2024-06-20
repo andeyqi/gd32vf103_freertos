@@ -58,15 +58,15 @@ int p1 = 0;
 
 void task1(void *p)
 {
-	int i = 0;
-	for(i = 0;i < 6000000;i++)
-	{
-		atomic_add1(1, (unsigned int *)&p1);
-		//p1++;
-	}
-	eclic_global_interrupt_disable();
-	printf("task1 atomic add: %d \n", p1);
-	eclic_global_interrupt_enable();
+    int i = 0;
+    for(i = 0;i < 6000000;i++)
+    {
+        atomic_add1(1, (unsigned int *)&p1);
+        //p1++;
+    }
+    eclic_global_interrupt_disable();
+    printf("task1 atomic add: %d \n", p1);
+    eclic_global_interrupt_enable();
 
     for(;;)
     {
@@ -83,16 +83,16 @@ void task1(void *p)
 void task2(void *p)
 {
 
-	int i = 0;
-	for(i = 0;i < 6000000;i++)
-	{
-		atomic_add1(-1, (unsigned int *)&p1);
-		//p1--;
-	}
+    int i = 0;
+    for(i = 0;i < 6000000;i++)
+    {
+        atomic_add1(-1, (unsigned int *)&p1);
+        //p1--;
+    }
 
-	eclic_global_interrupt_disable();
-	printf("task2 atomic add: %d \n", p1);
-	eclic_global_interrupt_enable();
+    eclic_global_interrupt_disable();
+    printf("task2 atomic add: %d \n", p1);
+    eclic_global_interrupt_enable();
 
     for(;;)
     {
