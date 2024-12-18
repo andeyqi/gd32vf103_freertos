@@ -127,6 +127,50 @@ void show_version(void)
 
 }
 
+static __attribute__((noinline)) int my_memcpy(void * src,void *  dst,int len)
+{
+    unsigned int tmp = 0;
+    unsigned int end = (char *)src + len;
+
+    asm volatile (
+            "1: lw %[tmp], (%[src])\n"
+            "sw %[tmp], (%[dst])\n"
+            "addi %[dst], %[dst], 4\n"
+            "addi %[src], %[src], 4\n"
+            "blt %[src], %[end], 1b"
+            : [dst] "+r" (dst),[tmp] "+r" (tmp),[src] "+r" (src)
+            : [end] "r" (end)
+            : "memory");
+
+    return len;
+}
+
+
+static int cmd_mymemcpy_test(int argc, char **argv)
+{
+
+    int src[8] = {0x11111111,0x22222222,0x33333333,0x44444444,
+                  0x55555555,0x66666666,0x77777777,0x88888888};
+    int dst[8] = {};
+
+    printf("my memcpy test ret = %d\r\n",my_memcpy(src,dst,sizeof(src)));
+
+    if(memcmp(src,dst,sizeof(src)) == 0)
+        printf("my memcpy test ok.\r\n");
+
+    int src1[32] = {0x11111111,0x22222222,0x33333333,0x44444444,
+                    0x55555555,0x66666666,0x77777777,0x88888888};
+    int dst1[32] = {};
+
+    printf("my memcpy test ret = %d\r\n",my_memcpy(src1,dst1,sizeof(src1)));
+
+    if(memcmp(src1,dst1,sizeof(src1)) == 0)
+        printf("my memcpy test ok.\r\n");
+
+    return 0;
+}
+LTSH_FUNCTION_EXPORT(cmd_mymemcpy_test, "my memcpy test");
+
 int main(void)
 {
     eclic_priority_group_set(ECLIC_PRIGROUP_LEVEL4_PRIO0); //四位优先级组全配置为lvl
