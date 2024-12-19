@@ -495,7 +495,7 @@ void littleshell_main_entry(void *pvParameters)
         }
         else
         {
-            vTaskDelay(100);
+            vTaskDelay(10);
         }
     }
 }
