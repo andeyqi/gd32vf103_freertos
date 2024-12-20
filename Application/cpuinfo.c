@@ -53,3 +53,18 @@ unsigned int cpuinfo(char argc,char ** argv)
     return 1;
 }
 LTSH_FUNCTION_EXPORT(cpuinfo,"show cpu info");
+
+
+unsigned int get_csr(char argc,char ** argv)
+{
+	uint32_t intattr = 0;
+	printf("mtvec = %08x\n",read_csr(mtvec));
+	for(uint32_t i =0;i < 87;i++)
+	{
+		intattr = eclic_get_intattr(i);
+		printf("intattr[%d] = %08x\n",i,intattr);
+	}
+	return 0;
+}
+LTSH_FUNCTION_EXPORT(get_csr,"show csr register");
+
