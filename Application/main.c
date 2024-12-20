@@ -111,7 +111,7 @@ void task2(void *p)
 
 void show_version(void)
 {
-    const char *ascii_art = 
+    const char *ascii_art =
         "    __                                     _   __                \n"
         "   / /   ____  ____  ____ _____ _____     / | / /___ _____  ____ \n"
         "  / /   / __ \\/ __ \\/ __ `/ __ `/ __ \\   /  |/ / __ `/ __ \\/ __ \\\n"
@@ -145,6 +145,44 @@ static __attribute__((noinline)) int my_memcpy(void * src,void *  dst,int len)
     return len;
 }
 
+
+void *rv32_memcpy(void *dest, const void *src, size_t n) {
+    if (!dest || !src || n == 0) {
+        return dest; // 空操作
+    }
+
+    asm volatile (
+        "beqz %[n], 2f               \n" // 如果 n == 0，直接跳转到结束
+        "1:                          \n"
+        "lb t0, 0(%[src])            \n" // 从源地址加载一个字节到 t0
+        "sb t0, 0(%[dest])           \n" // 将 t0 存储到目标地址
+        "addi %[src], %[src], 1      \n" // 源地址递增
+        "addi %[dest], %[dest], 1    \n" // 目标地址递增
+        "addi %[n], %[n], -1         \n" // 剩余字节数减 1
+        "bnez %[n], 1b               \n" // 如果 n > 0，跳转回循环
+        "2:                          \n"
+        : [dest] "+r" (dest), [src] "+r" (src), [n] "+r" (n) // 输出操作数
+        :
+        : "t0", "memory"             // 通知编译器 t0 和内存会被修改
+    );
+
+    return dest; // 返回目标地址
+}
+
+
+static int rv32_memcpy_test(int argc, char **argv)
+{
+
+    char src[] = "Hello, RISC-V!";
+    char dest[20];
+
+    rv32_memcpy(dest, src, sizeof(src));
+
+    printf("Copied string: %s\r\n", dest);
+    return 0;
+
+}
+LTSH_FUNCTION_EXPORT(rv32_memcpy_test, "ev32 memcpy test");
 
 static int cmd_mymemcpy_test(int argc, char **argv)
 {
