@@ -68,3 +68,34 @@ unsigned int get_csr(char argc,char ** argv)
 }
 LTSH_FUNCTION_EXPORT(get_csr,"show csr register");
 
+
+#define MCOUNTINHIBIT    0x320  //自定义寄存器用于控制计数器的开启和关闭
+
+unsigned int mcount(char argc,char ** argv)
+{
+    uint32_t countinhibit = 0;
+    if(argc == 1)
+    {
+        countinhibit = read_csr(mucounteren); //读取 mcycle 寄存器
+        printf("MCOUNT = 0x%08x \n",countinhibit);
+        printf("IR %s\n",((countinhibit & 0x01U << 2U) ? "OFF" : "ON"));
+        printf("CY %s\n",((countinhibit & 0x01U << 0U) ? "OFF" : "ON"));
+        printf("cycle %u\n",read_csr(cycle));
+        printf("cycleh %d\n",read_csr(0xc80));
+    }
+
+    if(argc == 2)
+    {
+
+        if(strcmp(argv[1],"off") == 0)
+            asm volatile ("csrsi 0x320, 0x5");
+
+        if(strcmp(argv[1],"on") == 0)
+            asm volatile ("csrci 0x320, 0x5");
+
+    }
+
+
+	return 0;
+}
+LTSH_FUNCTION_EXPORT(mcount,"show mcountinhibit register");

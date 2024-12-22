@@ -19,6 +19,8 @@
 #include "littleshell.h"
 #include "atomic.h"
 #include "log.h"
+#include "riscv_encoding.h"
+#include "n200_func.h"
 
 RingBuffer uart_rx;
 
@@ -84,6 +86,9 @@ void task2(void *p)
 {
 
     int i = 0;
+    uint64_t start = 0;
+    uint64_t end = 0;
+    uint64_t tmp = 0;
     for(i = 0;i < 6000000;i++)
     {
         atomic_add1(-1, (unsigned int *)&p1);
@@ -96,7 +101,15 @@ void task2(void *p)
 
     for(;;)
     {
+        start = 0,end = 0;
+        start = read_csr(cycle);
+        tmp = read_csr(0xc80);
+        start |= tmp<<32u;
         vTaskDelay(pdMS_TO_TICKS(5000));
+        end = read_csr(cycle);
+        tmp = read_csr(0xc80);
+        end |= tmp<<32u;
+        printf("%lu\n",(uint32_t)(end -start));
     }
 
     //char *taskStatus = (char *)pvPortMalloc( uxTaskGetNumberOfTasks() * sizeof( TaskStatus_t ) );
