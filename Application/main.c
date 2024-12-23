@@ -21,6 +21,7 @@
 #include "log.h"
 #include "riscv_encoding.h"
 #include "n200_func.h"
+#include "perf_counter.h"
 
 RingBuffer uart_rx;
 

@@ -142,6 +142,7 @@ C_INCLUDES = \
 		-I $(TOP_DIR)/Application\
 		-I $(TOP_DIR)/utilities \
 		-I $(TOP_DIR)/littleshell \
+		-I $(TOP_DIR)/perf_counter
 
 
 # compile gcc flags
