@@ -69,7 +69,8 @@ C_SOURCES =  \
 		${wildcard $(TOP_DIR)/SEGGER/port/*.c} \
 		${wildcard $(TOP_DIR)/Application/*.c} \
 		${wildcard $(TOP_DIR)/utilities/*.c} \
-		${wildcard $(TOP_DIR)/littleshell/*.c}
+		${wildcard $(TOP_DIR)/littleshell/*.c} \
+		$(TOP_DIR)/perf_counter/perf_counter.c
 
 # ASM sources
 ASM_SOURCES =  \
