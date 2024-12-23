@@ -70,7 +70,8 @@ C_SOURCES =  \
 		${wildcard $(TOP_DIR)/Application/*.c} \
 		${wildcard $(TOP_DIR)/utilities/*.c} \
 		${wildcard $(TOP_DIR)/littleshell/*.c} \
-		$(TOP_DIR)/perf_counter/perf_counter.c
+		$(TOP_DIR)/perf_counter/perf_counter.c \
+		$(TOP_DIR)/perf_counter/perfc_port_riscv_cycle.c
 
 # ASM sources
 ASM_SOURCES =  \
@@ -127,6 +128,7 @@ AS_INCLUDES = \
 
 # C includes
 C_INCLUDES = \
+		-include $(TOP_DIR)/config/config.h  \
 		-I $(TOP_DIR)/GD32VF103_Firmware_Library/GD32VF103_standard_peripheral  \
 		-I $(TOP_DIR)/GD32VF103_Firmware_Library/GD32VF103_standard_peripheral/Include  \
 		-I $(TOP_DIR)/GD32VF103_Firmware_Library/RISCV/drivers  \
@@ -162,7 +164,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)"
 LDSCRIPT = $(TOP_DIR)/GD32VF103_Firmware_Library/RISCV/env_Eclipse/GD32VF103xB.lds
 
 # libraries
-LIBS = -lm 
+LIBS = -lm
 LIBDIR =
 LDFLAGS = $(MCU) -nostartfiles -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map -Wl,--gc-sections
 
