@@ -14,13 +14,13 @@
                                                                                 \
         printf("         ");                                                    \
         for (n = 0; n < (TRACE_DISPLAY_WIDTH / sizeof(__TYPE)); n++) {          \
-            printf(__FORMAT_STR, (n*sizeof(__TYPE)));                           \
+            printf(__FORMAT_STR, (__TYPE)(n*sizeof(__TYPE)));                   \
         }                                                                       \
         printf("\r\n");                                                         \
         while(__Size >= (TRACE_DISPLAY_WIDTH / sizeof(__TYPE))) {               \
             printf("%08x:",TRACE_DISPLAY_WIDTH*(line++));                       \
             for (n = 0; n < (TRACE_DISPLAY_WIDTH / sizeof(__TYPE)); n++) {      \
-                printf(__FORMAT_STR, pSrc[n]);                                  \
+                printf(__FORMAT_STR, (__TYPE)pSrc[n]);                          \
             }                                                                   \
                                                                                 \
             printf("\t");                                                       \
@@ -43,7 +43,7 @@
         if (__Size > 0) {                                                       \
             printf("%08x:",TRACE_DISPLAY_WIDTH*(line));                         \
             for (n = 0; n < __Size; n++) {                                      \
-                printf(__FORMAT_STR, pSrc[n]);                                  \
+                printf(__FORMAT_STR, (__TYPE)pSrc[n]);                          \
             }                                                                   \
             for (   n = 0;                                                      \
                     n < (TRACE_DISPLAY_WIDTH/sizeof(__TYPE) - __Size);          \
@@ -67,7 +67,7 @@
 
 void trace_word_stream(uint32_t *pwStream, uint16_t hwSize,uint16_t osffset)
 {
-    __OUTPUT_STREAM(uint32_t, pwStream, osffset, hwSize, "%08X ", "         ");
+    __OUTPUT_STREAM(uint32_t, pwStream, osffset, hwSize, "%08lX ", "         ");
 }
 
 void trace_hword_stream(uint16_t *phwStream, uint16_t hwSize,uint16_t osffset)
