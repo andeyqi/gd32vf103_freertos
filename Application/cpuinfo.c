@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include "riscv_encoding.h"
 #include "n200_func.h"
 #include "littleshell.h"
@@ -57,12 +58,12 @@ LTSH_FUNCTION_EXPORT(cpuinfo,"show cpu info");
 
 unsigned int get_csr(char argc,char ** argv)
 {
-	uint32_t intattr = 0;
-	printf("mtvec = %08x\n",read_csr(mtvec));
-	for(uint32_t i =0;i < 87;i++)
+	uint8_t intattr = 0;
+	printf("mtvec = %08lx\n",read_csr(mtvec));
+	for(uint8_t i =0;i < 87;i++)
 	{
 		intattr = eclic_get_intattr(i);
-		printf("intattr[%d] = %08x\n",i,intattr);
+		printf("intattr[%u] = %x\n",i,intattr);
 	}
 	return 0;
 }
@@ -77,11 +78,11 @@ unsigned int mcount(char argc,char ** argv)
     if(argc == 1)
     {
         countinhibit = read_csr(mucounteren); //读取 mcycle 寄存器
-        printf("MCOUNT = 0x%08x \n",countinhibit);
+        printf("MCOUNT = 0x%08lx \n",countinhibit);
         printf("IR %s\n",((countinhibit & 0x01U << 2U) ? "OFF" : "ON"));
         printf("CY %s\n",((countinhibit & 0x01U << 0U) ? "OFF" : "ON"));
-        printf("cycle %u\n",read_csr(cycle));
-        printf("cycleh %d\n",read_csr(0xc80));
+        printf("cycle %lu\n",read_csr(cycle));
+        printf("cycleh %ld\n",read_csr(0xc80));
     }
 
     if(argc == 2)
