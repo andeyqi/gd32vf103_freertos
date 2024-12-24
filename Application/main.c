@@ -22,6 +22,7 @@
 #include "riscv_encoding.h"
 #include "n200_func.h"
 #include "perf_counter.h"
+#include <string.h>
 
 RingBuffer uart_rx;
 
@@ -136,7 +137,7 @@ void show_version(void)
 static __attribute__((noinline)) int my_memcpy(void * src,void *  dst,int len)
 {
     unsigned int tmp = 0;
-    unsigned int end = (char *)src + len;
+    unsigned int end = (unsigned int)((char *)src + len);
 
     asm volatile (
             "1: lw %[tmp], (%[src])\n"
