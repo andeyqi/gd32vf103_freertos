@@ -18,7 +18,7 @@
         }                                                                       \
         printf("\r\n");                                                         \
         while(__Size >= (TRACE_DISPLAY_WIDTH / sizeof(__TYPE))) {               \
-            printf("%08x:",TRACE_DISPLAY_WIDTH*(line++));                       \
+            printf("%08lx:",(uint32_t)__ADDR + TRACE_DISPLAY_WIDTH*(line++));   \
             for (n = 0; n < (TRACE_DISPLAY_WIDTH / sizeof(__TYPE)); n++) {      \
                 printf(__FORMAT_STR, (__TYPE)pSrc[n]);                          \
             }                                                                   \

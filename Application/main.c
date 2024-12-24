@@ -100,20 +100,11 @@ void task2(void *p)
 
     for(;;)
     {
-        start_cycle_counter();
+        //start_cycle_counter();
         vTaskDelay(pdMS_TO_TICKS(5000));
-        int64_t lCycleUsed = stop_cycle_counter();
-        printf("cycle counter %ld.\n",(uint32_t)lCycleUsed);
+        //int64_t lCycleUsed = stop_cycle_counter();
+        //printf("cycle counter %ld.\n",(uint32_t)lCycleUsed);
     }
-
-    //char *taskStatus = (char *)pvPortMalloc( uxTaskGetNumberOfTasks() * sizeof( TaskStatus_t ) );
-    //for(;;)
-    //{
-    //    vTaskList(taskStatus);
-    //    printf("\nTaskName\tStatus\tPRI\tStack\tTaskNumber\n%s",taskStatus);
-    //    printf("current tick is %ld\n",xTaskGetTickCount());
-    //    vTaskDelay(pdMS_TO_TICKS(5000));
-    //}
 }
 
 void show_version(void)
