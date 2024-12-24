@@ -87,9 +87,6 @@ void task2(void *p)
 {
 
     int i = 0;
-    uint64_t start = 0;
-    uint64_t end = 0;
-    uint64_t tmp = 0;
     for(i = 0;i < 6000000;i++)
     {
         atomic_add1(-1, (unsigned int *)&p1);
@@ -102,15 +99,10 @@ void task2(void *p)
 
     for(;;)
     {
-        start = 0,end = 0;
-        start = read_csr(cycle);
-        tmp = read_csr(0xc80);
-        start |= tmp<<32u;
+        start_cycle_counter();
         vTaskDelay(pdMS_TO_TICKS(5000));
-        end = read_csr(cycle);
-        tmp = read_csr(0xc80);
-        end |= tmp<<32u;
-        printf("%lu\n",(uint32_t)(end -start));
+        int64_t lCycleUsed = stop_cycle_counter();
+        printf("cycle counter %ld.\n",(uint32_t)lCycleUsed);
     }
 
     //char *taskStatus = (char *)pvPortMalloc( uxTaskGetNumberOfTasks() * sizeof( TaskStatus_t ) );
@@ -237,6 +229,7 @@ int main(void)
     #if UARTLOGEN
     uart_log_init();
     #endif
+    init_cycle_counter(false);
     show_version();
     /* 初始化led PA1/PA2/PC13 */
     rcu_periph_clock_enable(RCU_GPIOA);
