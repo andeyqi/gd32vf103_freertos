@@ -132,7 +132,6 @@ C_INCLUDES = \
 		-I $(TOP_DIR)/GD32VF103_Firmware_Library/GD32VF103_standard_peripheral  \
 		-I $(TOP_DIR)/GD32VF103_Firmware_Library/GD32VF103_standard_peripheral/Include  \
 		-I $(TOP_DIR)/GD32VF103_Firmware_Library/RISCV/drivers  \
-		-I $(TOP_DIR)/GD32VF103_Firmware_Library/NMSIS/Core/Include \
 		-I $(TOP_DIR)/freertos/include \
 		-I $(TOP_DIR)/freertos/portable/GCC/N200 \
 		-I $(TOP_DIR)/SEGGER  \

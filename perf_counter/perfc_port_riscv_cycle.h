@@ -1,8 +1,8 @@
 #ifndef PERFC_PORT_RISCV_CYCLE_H
 #define PERFC_PORT_RISCV_CYCLE_H
 
-#include "core_feature_base.h"
-#include "core_compatiable.h"
+#include "n200_func.h"
+
 /*============================ MACROS ========================================*/
 /*============================ MACROFIED FUNCTIONS ===========================*/
 

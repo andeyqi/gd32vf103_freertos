@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include "n200_timer.h"
 #include "n200_eclic.h"
+#include "nmsis_compiler.h"
 
 #define	ECLIC_GROUP_LEVEL0_PRIO4	0
 #define	ECLIC_GROUP_LEVEL1_PRIO3	1
@@ -58,11 +59,11 @@ uint8_t eclic_get_cliccfg ();
 void eclic_set_mth (uint8_t mth);
 uint8_t eclic_get_mth();
 
-//sets nlbits 
+//sets nlbits
 void eclic_set_nlbits(uint8_t nlbits);
 
 
-//get nlbits 
+//get nlbits
 uint8_t eclic_get_nlbits();
 
 void eclic_set_irq_lvl(uint32_t source, uint8_t lvl);
@@ -105,5 +106,103 @@ __attribute__( ( always_inline ) ) static inline  void __WFE(void) {
 	__asm volatile ("csrc 0x810, 0x1");
 }
 
+#define __STR(s)                #s
+#define STRINGIFY(s)            __STR(s)
+
+/** \brief Type of Control and Status Register(CSR), depends on the XLEN defined in RISC-V */
+typedef unsigned long rv_csr_t;
+
+/**
+ * \brief CSR operation Macro for csrs instruction.
+ * \details
+ * Set csr register to be csr_content | val
+ * \param csr   CSR macro definition defined in
+ *              \ref NMSIS_Core_CSR_Registers, eg. \ref CSR_MSTATUS
+ * \param val   Mask value to be used wih csrs instruction
+ */
+#define __RV_CSR_SET(csr, val)                                  \
+    ({                                                          \
+        rv_csr_t __v = (rv_csr_t)(val);                         \
+        __ASM volatile("csrs " STRINGIFY(csr) ", %0"            \
+                     :                                          \
+                     : "rK"(__v)                                \
+                     : "memory");                               \
+    })
+
+/**
+ * \brief CSR operation Macro for csrc instruction.
+ * \details
+ * Set csr register to be csr_content & ~val
+ * \param csr   CSR macro definition defined in
+ *              \ref NMSIS_Core_CSR_Registers, eg. \ref CSR_MSTATUS
+ * \param val   Mask value to be used wih csrc instruction
+ */
+#define __RV_CSR_CLEAR(csr, val)                                \
+    ({                                                          \
+        rv_csr_t __v = (rv_csr_t)(val);                         \
+        __ASM volatile("csrc " STRINGIFY(csr) ", %0"            \
+                     :                                          \
+                     : "rK"(__v)                                \
+                     : "memory");                               \
+    })
+
+/**
+ * \brief   Enable IRQ Interrupts
+ * \details Enables IRQ interrupts by setting the MIE-bit in the MSTATUS Register.
+ * \remarks
+ *          Can only be executed in Privileged modes.
+ */
+__STATIC_FORCEINLINE void __enable_irq(void)
+{
+    __RV_CSR_SET(CSR_MSTATUS, MSTATUS_MIE);
+}
+
+/**
+ * \brief   Disable IRQ Interrupts
+ * \details Disables IRQ interrupts by clearing the MIE-bit in the MSTATUS Register.
+ * \remarks
+ *          Can only be executed in Privileged modes.
+ */
+__STATIC_FORCEINLINE void __disable_irq(void)
+{
+    __RV_CSR_CLEAR(CSR_MSTATUS, MSTATUS_MIE);
+}
+
+
+/* ===== ARM Compatiable Functions ===== */
+/**
+ * \defgroup NMSIS_Core_ARMCompatiable_Functions   ARM Compatiable Functions
+ * \ingroup  NMSIS_Core
+ * \brief    A few functions that compatiable with ARM CMSIS-Core.
+ * \details
+ *
+ * Here we provided a few functions that compatiable with ARM CMSIS-Core,
+ * mostly used in the DSP and NN library.
+ * @{
+ */
+
+/**
+ * \brief Execute fence instruction, p -> pred, s -> succ
+ * \details
+ * the FENCE instruction ensures that all memory accesses from instructions preceding
+ * the fence in program order (the `predecessor set`) appear earlier in the global memory order than
+ * memory accesses from instructions appearing after the fence in program order (the `successor set`).
+ * For details, please refer to The RISC-V Instruction Set Manual
+ * \param p     predecessor set, such as iorw, rw, r, w
+ * \param s     successor set, such as iorw, rw, r, w
+ **/
+#define __FENCE(p, s) __ASM volatile ("fence " #p "," #s : : : "memory")
+
+/** \brief Read & Write Memory barrier */
+#define __RWMB()        __FENCE(iorw,iorw)
+
+/** \brief Instruction Synchronization Barrier, compatiable with ARM */
+#define __ISB()                             __RWMB()
+
+/** \brief Data Synchronization Barrier, compatiable with ARM */
+#define __DSB()                             __RWMB()
+
+/** \brief Data Memory Barrier, compatiable with ARM */
+#define __DMB()                             __RWMB()
 
 #endif
