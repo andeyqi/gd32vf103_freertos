@@ -70,8 +70,7 @@ C_SOURCES =  \
 		${wildcard $(TOP_DIR)/Application/*.c} \
 		${wildcard $(TOP_DIR)/utilities/*.c} \
 		${wildcard $(TOP_DIR)/littleshell/*.c} \
-		$(TOP_DIR)/perf_counter/perf_counter.c \
-		$(TOP_DIR)/perf_counter/perfc_port_riscv_cycle.c
+		${wildcard $(TOP_DIR)/perf_counter/*.c} \
 
 # ASM sources
 ASM_SOURCES =  \
@@ -128,7 +127,7 @@ AS_INCLUDES = \
 
 # C includes
 C_INCLUDES = \
-		-include $(TOP_DIR)/config/config.h  \
+		-include $(TOP_DIR)/config/pre_include_config.h  \
 		-I $(TOP_DIR)/GD32VF103_Firmware_Library/GD32VF103_standard_peripheral  \
 		-I $(TOP_DIR)/GD32VF103_Firmware_Library/GD32VF103_standard_peripheral/Include  \
 		-I $(TOP_DIR)/GD32VF103_Firmware_Library/RISCV/drivers  \
