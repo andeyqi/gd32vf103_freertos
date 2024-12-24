@@ -105,6 +105,12 @@ your application. */
 #define configENABLE_BACKWARD_COMPATIBILITY     0
 #define configNUM_THREAD_LOCAL_STORAGE_POINTERS 5
 
+#define configUSE_PERF_STACK                  1
+#if (configUSE_PERF_STACK == 1)
+    #define configUSE_STACK_MAGIC             1
+    #define configRECORD_STACK_HIGH_ADDRESS   1
+#endif
+
 /* Memory allocation related definitions. */
 #define configSUPPORT_STATIC_ALLOCATION         0
 #define configSUPPORT_DYNAMIC_ALLOCATION        1

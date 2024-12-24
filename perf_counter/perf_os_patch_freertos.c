@@ -29,6 +29,9 @@ task.h is included from an application file. */
 #include "task.h"
 #include "timers.h"
 #include "stack_macros.h"
+#include "rtlist.h"
+#include "littleshell.h"
+#include <stdio.h>
 
 /* Lint e9021, e961 and e750 are suppressed as a MISRA exception justified
 because the MPU ports require MPU_WRAPPERS_INCLUDED_FROM_API_FILE to be defined
@@ -164,6 +167,13 @@ which static variables must be declared volatile. */
 PRIVILEGED_DATA
 extern TCB_t * volatile pxCurrentTCB;
 
+typedef struct tskTaskControlBlockList
+{
+    rt_list_t   list;
+    TCB_t * tcb;
+    task_cycle_info_t * cycle;
+}tskTCBList;
+
 /*! \note if you aren't using perf_counter inside KEIL with RTE, please create
  *!          a header file called "Pre_Include_Global.h", copy the following
  *!          content into the header file and and put following option
@@ -240,3 +250,61 @@ task_cycle_info_t * get_rtos_task_cycle_info(void)
 {
     return &(((struct __task_cycle_info_t *)pxCurrentTCB->pxStack)->tInfo);
 }
+
+
+rt_list_t tasklist = RT_LIST_OBJECT_INIT(tasklist);
+
+void __freertos_evr_on_create_task(void * pxNewTCB){
+    tskTCBList * node;
+    /*  malloc a node */
+    node = pvPortMalloc(sizeof(tskTCBList));
+
+    if(node != NULL)
+    {
+        rt_list_init(&node->list);
+        node->tcb = (TCB_t *)pxNewTCB;
+        node->cycle = &(((struct __task_cycle_info_t *)node->tcb->pxStack)->tInfo);
+        init_task_cycle_counter1((void *)node->cycle);
+        rt_list_insert_before(&tasklist,&node->list);
+    }
+}
+
+#if (1 == configUSE_PERF_STACK)
+static int buff_continuous_numbers(uint8_t * buff,uint8_t data)
+{
+    int l = 0;
+
+    if(NULL == buff)
+        return 0;
+
+    while(data == buff[l++]);
+
+    return  --l;
+}
+
+unsigned int stack(char argc,char ** argv)
+{
+    /* Thread list */
+    rt_list_t * pos;
+    tskTCBList * node;
+    int stackfree = 0;
+
+    printf("%-16s %-8s %-8s %-8s %-10s~%-10s\r\n","name","deep","used","usage(%)","stack_s","stack_e");
+    rt_list_for_each(pos,&tasklist)
+    {
+        node = rt_list_entry(pos,tskTCBList,list);
+        stackfree = buff_continuous_numbers((uint8_t *)((uint32_t)(node->tcb->pxStack) + sizeof(struct __task_cycle_info_t)),0xa5);
+        //stackfree += sizeof(struct __task_cycle_info_t);
+
+        printf("%-16s %-8d %-8d %-8d 0x%08x~0x%08x\r\n",node->tcb->pcTaskName,
+                                                        (uint32_t)node->tcb->pxEndOfStack - (uint32_t)(node->tcb->pxStack) + 1,
+                                                        (uint32_t)node->tcb->pxEndOfStack - (uint32_t)(node->tcb->pxStack) + 1 - stackfree,
+                                                        ((uint32_t)node->tcb->pxEndOfStack - (uint32_t)(node->tcb->pxStack) + 1 - stackfree)*100/((uint32_t)node->tcb->pxEndOfStack - (uint32_t)(node->tcb->pxStack) + 1),
+                                                        (uint32_t)(node->tcb->pxStack),(uint32_t)node->tcb->pxEndOfStack);
+    }
+
+    printf("\r\nHeap Total:%d\tFree:%d\r\n",configTOTAL_HEAP_SIZE,xPortGetFreeHeapSize());
+    return 1;
+}
+LTSH_FUNCTION_EXPORT(stack,"show stack usage");
+#endif

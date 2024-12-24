@@ -102,7 +102,7 @@ changed then the definition of StaticTask_t must also be updated. */
 /* If any of the following are set then task stacks are filled with a known
 value so the high water mark can be determined.  If none of the following are
 set then don't fill the stack so there is no unnecessary dependency on memset. */
-#if( ( configCHECK_FOR_STACK_OVERFLOW > 1 ) || ( configUSE_TRACE_FACILITY == 1 ) || ( INCLUDE_uxTaskGetStackHighWaterMark == 1 ) )
+#if( ( configCHECK_FOR_STACK_OVERFLOW > 1 ) || ( configUSE_TRACE_FACILITY == 1 ) || ( INCLUDE_uxTaskGetStackHighWaterMark == 1 ) || ( configUSE_STACK_MAGIC == 1))
 	#define tskSET_NEW_STACKS_TO_KNOWN_VALUE	1
 #else
 	#define tskSET_NEW_STACKS_TO_KNOWN_VALUE	0
@@ -239,8 +239,8 @@ count overflows. */
 	taskRECORD_READY_PRIORITY( ( pxTCB )->uxPriority );												\
 	vListInsertEnd( &( pxReadyTasksLists[ ( pxTCB )->uxPriority ] ), &( ( pxTCB )->xStateListItem ) ); \
 	tracePOST_MOVED_TASK_TO_READY_STATE( pxTCB )
-	
-#if CONFIG_SYSTEMVIEW_EN  
+
+#if CONFIG_SYSTEMVIEW_EN
 /*
  * Place the task represented by pxTCB which has been in a ready list before
  * into the appropriate ready list for the task.
@@ -1637,7 +1637,7 @@ static void prvAddNewTaskToReadyList( TCB_t *pxNewTCB )
 					{
 						mtCOVERAGE_TEST_MARKER();
 					}
-					#if CONFIG_SYSTEMVIEW_EN   
+					#if CONFIG_SYSTEMVIEW_EN
 					prvReaddTaskToReadyList( pxTCB );
 					#else
 					prvAddTaskToReadyList( pxTCB );
@@ -1702,7 +1702,7 @@ static void prvAddNewTaskToReadyList( TCB_t *pxNewTCB )
 			{
 				mtCOVERAGE_TEST_MARKER();
 			}
-			#if CONFIG_SYSTEMVIEW_EN   
+			#if CONFIG_SYSTEMVIEW_EN
 			traceMOVED_TASK_TO_SUSPENDED_LIST(pxTCB);
 			#endif
 			vListInsertEnd( &xSuspendedTaskList, &( pxTCB->xStateListItem ) );
@@ -3745,7 +3745,7 @@ static void prvCheckTasksWaitingTermination( void )
 
 #endif /* INCLUDE_uxTaskGetStackHighWaterMark */
 /*-----------------------------------------------------------*/
-#if CONFIG_SYSTEMVIEW_EN   
+#if CONFIG_SYSTEMVIEW_EN
 #if (INCLUDE_pxTaskGetStackStart == 1)
 	uint8_t* pxTaskGetStackStart( TaskHandle_t xTask)
 	{
@@ -3930,7 +3930,7 @@ TCB_t *pxTCB;
 
 					/* Inherit the priority before being moved into the new list. */
 					pxMutexHolderTCB->uxPriority = pxCurrentTCB->uxPriority;
-					#if CONFIG_SYSTEMVIEW_EN   
+					#if CONFIG_SYSTEMVIEW_EN
 					prvReaddTaskToReadyList( pxMutexHolderTCB );
 					#else
 					prvAddTaskToReadyList( pxMutexHolderTCB );
@@ -4024,12 +4024,12 @@ TCB_t *pxTCB;
 					any other purpose if this task is running, and it must be
 					running to give back the mutex. */
 					listSET_LIST_ITEM_VALUE( &( pxTCB->xEventListItem ), ( TickType_t ) configMAX_PRIORITIES - ( TickType_t ) pxTCB->uxPriority ); /*lint !e961 MISRA exception as the casts are only redundant for some ports. */
-					#if CONFIG_SYSTEMVIEW_EN   
-					prvReaddTaskToReadyList( pxTCB );				
+					#if CONFIG_SYSTEMVIEW_EN
+					prvReaddTaskToReadyList( pxTCB );
 					#else
 					prvAddTaskToReadyList( pxTCB );
 					#endif
-					
+
 					/* Return true to indicate that a context switch is required.
 					This is only actually required in the corner case whereby
 					multiple mutexes were held and the mutexes were given back
@@ -5053,7 +5053,7 @@ const TickType_t xConstTickCount = xTickCount;
 			/* Add the task to the suspended task list instead of a delayed task
 			list to ensure it is not woken by a timing event.  It will block
 			indefinitely. */
-			#if CONFIG_SYSTEMVIEW_EN   
+			#if CONFIG_SYSTEMVIEW_EN
 			traceMOVED_TASK_TO_SUSPENDED_LIST(pxCurrentTCB);
 			#endif
 			vListInsertEnd( &xSuspendedTaskList, &( pxCurrentTCB->xStateListItem ) );
@@ -5072,7 +5072,7 @@ const TickType_t xConstTickCount = xTickCount;
 			{
 				/* Wake time has overflowed.  Place this item in the overflow
 				list. */
-				#if CONFIG_SYSTEMVIEW_EN   
+				#if CONFIG_SYSTEMVIEW_EN
 				traceMOVED_TASK_TO_OVERFLOW_DELAYED_LIST();
 				#endif
 				vListInsert( pxOverflowDelayedTaskList, &( pxCurrentTCB->xStateListItem ) );
@@ -5081,7 +5081,7 @@ const TickType_t xConstTickCount = xTickCount;
 			{
 				/* The wake time has not overflowed, so the current block list
 				is used. */
-				#if CONFIG_SYSTEMVIEW_EN   
+				#if CONFIG_SYSTEMVIEW_EN
 				traceMOVED_TASK_TO_DELAYED_LIST();
 				#endif
 				vListInsert( pxDelayedTaskList, &( pxCurrentTCB->xStateListItem ) );
@@ -5113,7 +5113,7 @@ const TickType_t xConstTickCount = xTickCount;
 		if( xTimeToWake < xConstTickCount )
 		{
 			/* Wake time has overflowed.  Place this item in the overflow list. */
-			#if CONFIG_SYSTEMVIEW_EN   
+			#if CONFIG_SYSTEMVIEW_EN
 			traceMOVED_TASK_TO_OVERFLOW_DELAYED_LIST();
 			#endif
 			vListInsert( pxOverflowDelayedTaskList, &( pxCurrentTCB->xStateListItem ) );
@@ -5121,7 +5121,7 @@ const TickType_t xConstTickCount = xTickCount;
 		else
 		{
 			/* The wake time has not overflowed, so the current block list is used. */
-			#if CONFIG_SYSTEMVIEW_EN   
+			#if CONFIG_SYSTEMVIEW_EN
 			traceMOVED_TASK_TO_DELAYED_LIST();
 			#endif
 			vListInsert( pxDelayedTaskList, &( pxCurrentTCB->xStateListItem ) );

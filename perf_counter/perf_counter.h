@@ -148,7 +148,7 @@ extern "C" {
 #endif
 
 /*!
- * \brief an attribute for static variables that no initialisation is required 
+ * \brief an attribute for static variables that no initialisation is required
  *        in the C startup process.
  */
 #ifndef PERF_NOINIT
@@ -598,9 +598,9 @@ __asm(".global __ensure_systick_wrapper\n\t");
  *----------------------------------------------------------------------------*/
 /*
 Protothreads open source BSD-style license
-The protothreads library is released under an open source license that allows 
-both commercial and non-commercial use without restrictions. The only 
-requirement is that credits is given in the source code and in the documentation 
+The protothreads library is released under an open source license that allows
+both commercial and non-commercial use without restrictions. The only
+requirement is that credits is given in the source code and in the documentation
 for your product.
 
 The full license text follows.
@@ -641,16 +641,16 @@ Author: Adam Dunkels
             };                                                                  \
             uint8_t *ptPTState = &(__state);                                    \
             switch (__state) {                                                  \
-                case __COUNTER__ - count_offset: 
+                case __COUNTER__ - count_offset:
 
 #define PERFC_PT_ENTRY(...)                                                     \
             (*ptPTState) = (__COUNTER__ - count_offset + 1) >> 1;               \
             __VA_ARGS__                                                         \
             case (__COUNTER__ - count_offset) >> 1: (void)(*ptPTState);
-            
+
 #define PERFC_PT_YIELD(...)                                                     \
             PERFC_PT_ENTRY(return __VA_ARGS__;)
-            
+
 #define PERFC_PT_END()                                                          \
             (*ptPTState) = 0;                                                   \
             break;}
@@ -701,7 +701,7 @@ Author: Adam Dunkels
             PERFC_PT_ENTRY(                                                     \
                 return __VA_ARGS__;                                             \
             )
-            
+
 #define PERFC_PT_RETURN(...)                                                    \
             (*ptPTState) = 0;                                                   \
             return __VA_ARGS__;
@@ -918,7 +918,7 @@ bool __perfc_is_time_out(int64_t lPeriod, int64_t *plTimestamp, bool bAutoReload
 /*! \brief initialize the default virtual cycle counter for the current task
  */
 extern void init_task_cycle_counter(void);
-
+extern void init_task_cycle_counter1(void * task_cycle);
 /*! \brief check whether the task stack canary is safe or not
  *  \retval false likely to be a stack-overflow
  *  \retval true task stack is safe
@@ -1106,8 +1106,8 @@ extern void update_perf_counter(void);
  *
  * \note some systems (e.g. FreeRTOS) might reconfigure the systick timer to
  *       fulfil the requirement of their feature. To support this, just
- *       before the reconfiguration, please call this function in order 
- *       to make the perf_counter works correctly later. 
+ *       before the reconfiguration, please call this function in order
+ *       to make the perf_counter works correctly later.
  *
  * \note after the reconfiguration, please call update_perf_counter() to apply
  *       the changes to perf_counter.

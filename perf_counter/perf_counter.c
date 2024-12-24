@@ -455,6 +455,19 @@ void init_task_cycle_counter(void)
     ptRootAgent->wMagicWord = MAGIC_WORD_CANARY;
 }
 
+
+void init_task_cycle_counter1(void * task_cycle)
+{
+    struct __task_cycle_info_t * ptRootAgent =
+        (struct __task_cycle_info_t *)task_cycle;
+
+    memset(ptRootAgent, 0, sizeof(struct __task_cycle_info_t));
+
+    ptRootAgent->tList.ptInfo = &(ptRootAgent->tInfo);
+    ptRootAgent->tInfo.lStart = get_system_ticks();
+    ptRootAgent->wMagicWord = MAGIC_WORD_CANARY;
+}
+
 bool perfc_check_task_stack_canary_safe(void)
 {
     struct __task_cycle_info_t * ptRootAgent =
