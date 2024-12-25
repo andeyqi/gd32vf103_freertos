@@ -234,7 +234,7 @@ void __freertos_evr_on_task_switched_out (void *ptTCB) {
 }
 
 
-void __freertos_evr_on_task_switched_in(void *ptTCB, uint32_t uxTopPriority) {
+void __freertos_evr_on_task_switched_in(void *ptTCB, unsigned int uxTopPriority) {
 #if defined(RTE_Compiler_EventRecorder)
   EventRecord2(EvtFreeRTOSTasks_TaskSwitchedIn, (uint32_t)ptTCB, uxTopPriority);
 #else
@@ -268,6 +268,34 @@ void __freertos_evr_on_create_task(void * pxNewTCB){
         rt_list_insert_before(&tasklist,&node->list);
     }
 }
+
+
+unsigned int cpuusage(char argc,char ** argv)
+{
+    /* Thread list */
+    int64_t ticks = get_system_ticks();
+    rt_list_t * pos;
+    tskTCBList * node;
+    int64_t other = ticks;
+
+    printf("%-16s %-16s %-16s %16s\r\n","name","total","ticks","cpuusage");
+    rt_list_for_each(pos,&tasklist)
+    {
+        node = rt_list_entry(pos,tskTCBList,list);
+
+        printf("%-16s %-16lld %-16lld %16f%%\r\n",node->tcb->pcTaskName,node->cycle->lUsedTotal,ticks,\
+          (double)(node->cycle->lUsedTotal*100)/(double)ticks);
+
+        other -= node->cycle->lUsedTotal;
+    }
+
+    if(other > 0)
+        printf("%-16s %-16lld %-16lld %16f%%\r\n","other",other,ticks,\
+          (double)(other*100)/(double)ticks);
+
+    return 1;
+}
+LTSH_FUNCTION_EXPORT(cpuusage,"show cpu usage");
 
 #if (1 == configUSE_PERF_STACK)
 static int buff_continuous_numbers(uint8_t * buff,uint8_t data)
