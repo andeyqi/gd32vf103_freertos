@@ -32,6 +32,7 @@ task.h is included from an application file. */
 #include "rtlist.h"
 #include "littleshell.h"
 #include <stdio.h>
+#include "my_printf.h"
 
 /* Lint e9021, e961 and e750 are suppressed as a MISRA exception justified
 because the MPU ports require MPU_WRAPPERS_INCLUDED_FROM_API_FILE to be defined
@@ -278,19 +279,19 @@ unsigned int cpuusage(char argc,char ** argv)
     tskTCBList * node;
     int64_t other = ticks;
 
-    printf("%-16s %-16s %-16s %16s\r\n","name","total","ticks","cpuusage");
+    my_printf("%-16s %-16s %-16s %16s\r\n","name","total","ticks","cpuusage");
     rt_list_for_each(pos,&tasklist)
     {
         node = rt_list_entry(pos,tskTCBList,list);
 
-        printf("%-16s %-16lld %-16lld %16f%%\r\n",node->tcb->pcTaskName,node->cycle->lUsedTotal,ticks,\
+        my_printf("%-16s %-16ll %-16ll %16f%%\r\n",node->tcb->pcTaskName,node->cycle->lUsedTotal,ticks,\
           (double)(node->cycle->lUsedTotal*100)/(double)ticks);
 
         other -= node->cycle->lUsedTotal;
     }
 
     if(other > 0)
-        printf("%-16s %-16lld %-16lld %16f%%\r\n","other",other,ticks,\
+        my_printf("%-16s %-16ll %-16ll %16f%%\r\n","other",other,ticks,\
           (double)(other*100)/(double)ticks);
 
     return 1;
