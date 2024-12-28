@@ -188,6 +188,7 @@ $(OBJ_DIR)/%.o: %.c Makefile | $(OBJ_DIR)
 
 $(OBJ_DIR)/%.o: %.S Makefile | $(OBJ_DIR)
 	@echo AS $(notdir $@)
+	@$(AS) -E $(ASFLAGS) $< -o $@.i
 	@$(AS) -c $(ASFLAGS) $< -o $@
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
