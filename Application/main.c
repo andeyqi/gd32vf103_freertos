@@ -233,7 +233,14 @@ int main(void)
     gpio_init(GPIOC, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_13);
     gpio_bit_reset(GPIOC, GPIO_PIN_13);
 
-    /*  */
+    /* 初始化PA0为输入引脚 */
+    gpio_init(GPIOA, GPIO_MODE_IPU, GPIO_OSPEED_50MHZ, GPIO_PIN_0);
+    gpio_exti_source_select(GPIO_PORT_SOURCE_GPIOA,0);
+    /* Exti init */
+    exti_init(EXTI_0,EXTI_INTERRUPT,EXTI_TRIG_BOTH);
+    exti_interrupt_enable(EXTI_0);
+    /* 配置 ECLIC EXTI0 中断   */
+    eclic_irq_enable(EXTI0_IRQn, 1, 0);
 
     xTaskCreate(task1,"task1",521,NULL,2,NULL);
     xTaskCreate(task2,"task2",521,NULL,2,NULL);

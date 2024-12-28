@@ -31,7 +31,7 @@ OF SUCH DAMAGE.
 #include "gd32vf103_it.h"
 #include "SYSVIEW_Serial_Conf.h"
 #include "ringbuffer.h"
-
+#include <stdio.h>
 
 extern RingBuffer uart_rx;
 /*!
@@ -57,4 +57,10 @@ void USART0_IRQHandler(void)
 uint8_t shell_uart_getchar(uint8_t * pdata)
 {
     return RingBuffer_Read(&uart_rx,pdata,1);
+}
+
+void EXTI0_IRQHandler(void)
+{
+    exti_flag_clear(EXTI_0);
+    printf("exti0 irq \n");
 }
