@@ -62,5 +62,12 @@ uint8_t shell_uart_getchar(uint8_t * pdata)
 void EXTI0_IRQHandler(void)
 {
     exti_flag_clear(EXTI_0);
-    printf("exti0 irq \n");
+    if(1 == gpio_input_bit_get(GPIOA, GPIO_PIN_0))
+    {
+        printf("pa0 irq rise\n");
+    }
+    if(0 == gpio_input_bit_get(GPIOA, GPIO_PIN_0))
+    {
+        printf("pa0 irq fall\n");
+    }
 }
