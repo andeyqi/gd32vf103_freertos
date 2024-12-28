@@ -71,3 +71,8 @@ void EXTI0_IRQHandler(void)
         printf("pa0 irq fall\n");
     }
 }
+
+void log_irq_entry(void)
+{
+    printf("entry irq entry\n");
+}
