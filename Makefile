@@ -71,6 +71,7 @@ C_SOURCES =  \
 		${wildcard $(TOP_DIR)/utilities/*.c} \
 		${wildcard $(TOP_DIR)/littleshell/*.c} \
 		${wildcard $(TOP_DIR)/perf_counter/*.c} \
+		${wildcard $(TOP_DIR)/perf_counter/coremark/*.c} \
 
 # ASM sources
 ASM_SOURCES =  \
