@@ -206,6 +206,7 @@ static int cmd_mymemcpy_test(int argc, char **argv)
     return 0;
 }
 LTSH_FUNCTION_EXPORT(cmd_mymemcpy_test, "my memcpy test");
+void coremark_main(void);
 
 int main(void)
 {
@@ -223,6 +224,7 @@ int main(void)
     #endif
     init_cycle_counter(false);
     show_version();
+    coremark_main();
     /* 初始化led PA1/PA2/PC13 */
     rcu_periph_clock_enable(RCU_GPIOA);
     gpio_init(GPIOA, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_1);

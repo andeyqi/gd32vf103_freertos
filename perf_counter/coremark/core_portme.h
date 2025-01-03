@@ -198,7 +198,7 @@ typedef size_t         ee_size_t;
    greater then 1.
 */
 #ifndef MAIN_HAS_NOARGC
-#define MAIN_HAS_NOARGC 0
+#define MAIN_HAS_NOARGC 1
 #endif
 
 /* Configuration : MAIN_HAS_NORETURN
@@ -209,11 +209,11 @@ typedef size_t         ee_size_t;
         1 - platform does not support returning a value from main
 */
 #ifndef MAIN_HAS_NORETURN
-#define MAIN_HAS_NORETURN 0
+#define MAIN_HAS_NORETURN 1
 #endif
 
 #ifndef ITERATIONS
-#define ITERATIONS  3000
+#define ITERATIONS  9000
 #endif
 
 /* Variable : default_num_contexts

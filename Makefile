@@ -16,7 +16,7 @@ TARGET = gd32vf103
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -Og
+OPT = -O3
 
 
 #PROJECTBASE = $(PWD)
@@ -109,7 +109,7 @@ CPU = -march=rv32imac
 # GD32应使用ilp32
 ABI = -mabi=ilp32
 # mcu
-MCU = $(CPU) $(ABI) -mcmodel=medlow -msmall-data-limit=8 -fmessage-length=0 -fsigned-char
+MCU = $(CPU) $(ABI) -mcmodel=medlow -msmall-data-limit=8 -fmessage-length=0 -fsigned-char -Wl,-u_printf_float
 
 # macros for gcc
 # AS defines
