@@ -17,5 +17,6 @@ extern void __freertos_evr_on_task_switched_in(void *ptTCB, unsigned int uxTopPr
 
 #define __perf_counter_printf__  printf
 
+#define TASK_TRACE_SWITCH_LOG         0
 
 #endif /* CONFIG_H */

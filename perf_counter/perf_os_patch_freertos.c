@@ -223,13 +223,24 @@ extern void __on_context_switch_out(uint32_t *pwStack);
 #define EvtFreeRTOSTasks_TaskSwitchedIn                     \
             EventID(EventLevelOp,     EvtFreeRTOSTasksNo, 0x0CU)
 
+static uint32_t counter = 0;
+
 void __freertos_evr_on_task_switched_out (void *ptTCB) {
 #if defined(RTE_Compiler_EventRecorder)
   EventRecord2(EvtFreeRTOSTasks_TaskSwitchedOut, (uint32_t)ptTCB, 0U);
 #else
   (void)pxCurrentTCB;
 #endif
-
+#if (TASK_TRACE_SWITCH_LOG == 1)
+    counter++;
+    if(counter > 1000)
+      printf("task switch in %s mepc = %x mstatus=%x mcause= %x msubm= %x \n",
+      ((TCB_t *)ptTCB)->pcTaskName,
+      ((TCB_t *)ptTCB)->pxTopOfStack[33],
+      ((TCB_t *)ptTCB)->pxTopOfStack[32],
+      ((TCB_t *)ptTCB)->pxTopOfStack[35],
+      ((TCB_t *)ptTCB)->pxTopOfStack[34]);
+#endif
     __on_context_switch_out(((TCB_t *)ptTCB)->pxStack);
 
 }
@@ -242,7 +253,18 @@ void __freertos_evr_on_task_switched_in(void *ptTCB, unsigned int uxTopPriority)
   (void)pxCurrentTCB;
   (void)uxTopPriority;
 #endif
-
+#if (TASK_TRACE_SWITCH_LOG == 1)
+    if(counter > 1000)
+    {
+      counter = 0;
+      printf("task switch in %s mepc = %x mstatus=%x mcause= %x msubm= %x \n",
+      ((TCB_t *)ptTCB)->pcTaskName,
+      ((TCB_t *)ptTCB)->pxTopOfStack[33],
+      ((TCB_t *)ptTCB)->pxTopOfStack[32],
+      ((TCB_t *)ptTCB)->pxTopOfStack[35],
+      ((TCB_t *)ptTCB)->pxTopOfStack[34]);
+    }
+#endif
     __on_context_switch_in(((TCB_t *)ptTCB)->pxStack);
 }
 
