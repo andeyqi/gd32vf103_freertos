@@ -62,6 +62,7 @@ int p1 = 0;
 
 void task1(void *p)
 {
+#if USED_ATOMIC_TEST
     int i = 0;
     for(i = 0;i < 6000000;i++)
     {
@@ -71,14 +72,12 @@ void task1(void *p)
     eclic_global_interrupt_disable();
     printf("task1 atomic add: %d \n", p1);
     eclic_global_interrupt_enable();
-
+#endif
+    gpio_bit_write(GPIOA, GPIO_PIN_2, (bit_status)(1-gpio_input_bit_get(GPIOA, GPIO_PIN_2)));
+    gpio_bit_write(GPIOC, GPIO_PIN_13, (bit_status)(1-gpio_input_bit_get(GPIOC, GPIO_PIN_13)));
     for(;;)
     {
         gpio_bit_write(GPIOA, GPIO_PIN_1, (bit_status)(1-gpio_input_bit_get(GPIOA, GPIO_PIN_1)));
-        vTaskDelay(pdMS_TO_TICKS(500));
-        gpio_bit_write(GPIOA, GPIO_PIN_2, (bit_status)(1-gpio_input_bit_get(GPIOA, GPIO_PIN_2)));
-        vTaskDelay(pdMS_TO_TICKS(500));
-        gpio_bit_write(GPIOC, GPIO_PIN_13, (bit_status)(1-gpio_input_bit_get(GPIOC, GPIO_PIN_13)));
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
@@ -86,7 +85,7 @@ void task1(void *p)
 
 void task2(void *p)
 {
-
+#if USED_ATOMIC_TEST
     int i = 0;
     for(i = 0;i < 6000000;i++)
     {
@@ -97,7 +96,7 @@ void task2(void *p)
     eclic_global_interrupt_disable();
     printf("task2 atomic add: %d \n", p1);
     eclic_global_interrupt_enable();
-
+#endif
     for(;;)
     {
         //start_cycle_counter();
@@ -224,7 +223,9 @@ int main(void)
     #endif
     init_cycle_counter(false);
     show_version();
+#if PERF_USED_COREMARK
     coremark_main();
+#endif
     /* 初始化led PA1/PA2/PC13 */
     rcu_periph_clock_enable(RCU_GPIOA);
     gpio_init(GPIOA, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_1);
