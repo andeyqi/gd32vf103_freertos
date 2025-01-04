@@ -109,7 +109,7 @@ CPU = -march=rv32imac
 # GD32应使用ilp32
 ABI = -mabi=ilp32
 # mcu
-MCU = $(CPU) $(ABI) -mcmodel=medlow -msmall-data-limit=8 -fmessage-length=0 -fsigned-char -Wl,-u_printf_float
+MCU = $(CPU) $(ABI) -mcmodel=medlow -msmall-data-limit=8 -fmessage-length=0 -fsigned-char -Wl,-u_printf_float -fno-omit-frame-pointer
 
 # macros for gcc
 # AS defines
