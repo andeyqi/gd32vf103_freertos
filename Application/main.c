@@ -56,6 +56,33 @@ void uart_log_init(void)
     }
 }
 
+void func_d(void)
+{
+    printf("i am funcd\r\n");
+    vTaskDelay(pdMS_TO_TICKS(1000000));
+}
+
+void func_c(void)
+{
+    printf("i am funcc\r\n");
+    func_d();
+    printf("bye funcc\r\n");
+}
+
+void func_b(void)
+{
+    printf("i am funcb\r\n");
+    func_c();
+    printf("bye funcb\r\n");
+}
+
+
+void func_a(void)
+{
+    printf("i am funca\r\n");
+    func_b();
+    printf("bye funca\r\n");
+}
 
 
 int p1 = 0;
@@ -97,10 +124,12 @@ void task2(void *p)
     printf("task2 atomic add: %d \n", p1);
     eclic_global_interrupt_enable();
 #endif
+
     for(;;)
     {
         //start_cycle_counter();
-        vTaskDelay(pdMS_TO_TICKS(5000));
+        vTaskDelay(pdMS_TO_TICKS(25000));
+        func_a();
         //int64_t lCycleUsed = stop_cycle_counter();
         //printf("cycle counter %ld.\n",(uint32_t)lCycleUsed);
     }

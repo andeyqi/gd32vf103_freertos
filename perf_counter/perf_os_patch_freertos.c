@@ -358,4 +358,64 @@ unsigned int stack(char argc,char ** argv)
     return 1;
 }
 LTSH_FUNCTION_EXPORT(stack,"show stack usage");
+
+#if __riscv_xlen == 32
+#define BACKTRACE_LEN 8
+#endif
+
+#if __riscv_xlen == 64
+#define BACKTRACE_LEN 16
+#endif
+
+struct stackframe
+{
+    uint32_t s_fp; // frame pointer
+    uint32_t s_ra; // return address
+};
+
+unsigned int backtrace(char argc,char ** argv)
+{
+    /* Thread list */
+    rt_list_t * pos;
+    tskTCBList * node;
+    struct stackframe * fp;
+    uint8_t num = 0;
+
+
+    rt_list_for_each(pos,&tasklist)
+    {
+        num = 0;
+        node = rt_list_entry(pos,tskTCBList,list);
+        const register unsigned long current_sp __asm__("sp"); //   get current stack pointer
+
+        if(current_sp<= (uint32_t)node->tcb->pxEndOfStack &&
+           current_sp >= (uint32_t)node->tcb->pxStack)
+        {
+            fp = (struct stackframe *)(__builtin_frame_address(0) - BACKTRACE_LEN);
+            printf("=%p\r\n",fp);
+        }
+        else
+        {
+            fp = (struct stackframe *)(node->tcb->pxTopOfStack[8] - BACKTRACE_LEN);
+            printf("==%p\r\n",fp);
+        }
+        printf("task %s backtrace fp 0x%08p.\r\n",node->tcb->pcTaskName,fp);
+        while(1)
+        {
+            if(fp->s_fp > (uint32_t)node->tcb->pxEndOfStack ||
+               fp->s_fp < (uint32_t)node->tcb->pxStack)
+            {
+                break;
+            }
+
+            printf("[%d] stack fp = 0x%08x ra = 0x%08x.\r\n",num++,fp->s_fp,fp->s_ra);
+
+            fp = (struct stackframe *)(fp->s_fp - BACKTRACE_LEN);
+        }
+
+    }
+
+    return 1;
+}
+LTSH_FUNCTION_EXPORT(backtrace,"show task backtrace");
 #endif
